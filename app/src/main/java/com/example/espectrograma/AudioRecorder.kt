@@ -19,10 +19,15 @@ class AudioRecorder(
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
 
-    private val bufferSize = AudioRecord.getMinBufferSize(
+    private val minBufferSize = AudioRecord.getMinBufferSize(
         SAMPLE_RATE,
         channelConfig,
         audioFormat
+    )
+
+    private val bufferSize = maxOf(
+        minBufferSize,
+        4096
     )
 
     private var audioRecord: AudioRecord? = null

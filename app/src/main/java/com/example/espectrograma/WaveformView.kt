@@ -1,6 +1,8 @@
 package com.example.espectrograma
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -18,47 +20,48 @@ fun WaveformView(
     Canvas(
         modifier = modifier
             .fillMaxWidth()
-            .height(250.dp)
+            .height(300.dp)
+            .border(
+                width = 2.dp,
+                color = Color.Gray
+            )
+            .background(Color.Black)
     ) {
 
-        if (samples.isEmpty()) {
-            return@Canvas
-        }
+        if (samples.isEmpty()) return@Canvas
 
         val centerY = size.height / 2f
 
-        val xStep = size.width / samples.size.toFloat()
+        val xStep = size.width / (samples.size - 1).toFloat()
 
-        var lastX = 0f
-        var lastY = centerY
+        drawLine(
+            color = Color.DarkGray,
+            start = Offset(0f, centerY),
+            end = Offset(size.width, centerY),
+            strokeWidth = 1f
+        )
+
+        var previous = Offset(0f, centerY)
 
         for (i in samples.indices) {
 
-            val x = i * xStep
+            val normalized = samples[i] / 32768f
 
-            val normalized =
-                samples[i] / 32768f
-
-            val y =
-                centerY -
-                        normalized * centerY
+            val current = Offset(
+                x = i * xStep,
+                y = centerY - normalized * centerY * 0.9f
+            )
 
             if (i > 0) {
-
                 drawLine(
-                    color = Color.Green,
-                    start = Offset(lastX, lastY),
-                    end = Offset(x, y),
+                    color = Color(0xFF00FF00),
+                    start = previous,
+                    end = current,
                     strokeWidth = 2f
                 )
-
             }
 
-            lastX = x
-            lastY = y
-
+            previous = current
         }
-
     }
-
 }
